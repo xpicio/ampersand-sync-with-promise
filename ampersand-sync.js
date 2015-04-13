@@ -1,5 +1,8 @@
 /*$AMPERSAND_VERSION*/
-var _ = require('underscore');
+var result = require('lodash.result');
+var defaults = require('lodash.defaults');
+var includes = require('lodash.includes');
+var assign = require('lodash.assign');
 var xhr = require('xhr');
 var qs = require('qs');
 // TPromise stands for then/promise, used as a way to avoid naming collision with native Promise implementation
@@ -11,13 +14,21 @@ var urlError = function () {
     throw new Error('A "url" property or function must be specified');
 };
 
+// Map from CRUD to HTTP for our default `Backbone.sync` implementation.
+var methodMap = {
+    'create': 'POST',
+    'update': 'PUT',
+    'patch':  'PATCH',
+    'delete': 'DELETE',
+    'read':   'GET'
+};
 
 module.exports = function (method, model, options) {
     var type = methodMap[method];
     var headers = {};
 
     // Default options, unless specified.
-    _.defaults(options || (options = {}), {
+    defaults(options || (options = {}), {
         emulateHTTP: false,
         emulateJSON: false,
         // overrideable primarily to enable testing
@@ -29,7 +40,7 @@ module.exports = function (method, model, options) {
 
     // Ensure that we have a URL.
     if (!options.url) {
-        options.url = _.result(model, 'url') || urlError();
+        options.url = result(model, 'url') || urlError();
     }
 
     // Ensure that we have the appropriate request data.
@@ -40,7 +51,7 @@ module.exports = function (method, model, options) {
     // If passed a data param, we add it to the URL or body depending on request type
     if (options.data && type === 'GET') {
         // make sure we've got a '?'
-        options.url += _.contains(options.url, '?') ? '&' : '?';
+        options.url += includes(options.url, '?') ? '&' : '?';
         options.url += qs.stringify(options.data);
     }
 
@@ -66,11 +77,11 @@ module.exports = function (method, model, options) {
     }
 
     // Start setting ajaxConfig options (headers, xhrFields).
-    var ajaxConfig = (_.result(model, 'ajaxConfig') || {});
+    var ajaxConfig = (result(model, 'ajaxConfig') || {});
 
     // Combine generated headers with user's headers.
     if (ajaxConfig.headers) {
-        _.extend(headers, ajaxConfig.headers);
+        assign(headers, ajaxConfig.headers);
     }
     params.headers = headers;
 
@@ -96,7 +107,7 @@ module.exports = function (method, model, options) {
     // Turn a jQuery.ajax formatted request into xhr compatible
     params.method = params.type;
 
-    var ajaxSettings = _.extend(params, options);
+    var ajaxSettings = assign(params, options);
 
     var request;
     // Make the request. The callback executes functions that are compatible
@@ -104,23 +115,21 @@ module.exports = function (method, model, options) {
     var promise = new TPromise(function (resolve, reject) {
         request = options.xhr = options.xhrImplementation(ajaxSettings, function (err, resp, body) {
             if (err) {
-                if (options.error) {
-                    options.error(resp, 'error', err.message);
-                }
+                if (options.error) options.error(resp, 'error', err.message);
                 reject(err);
-            }
-
-            // Parse body as JSON if a string.
-            if (body && typeof body === 'string') {
-                try {
-                    body = JSON.parse(body);
-                } catch (err) {
-                    if (options.error) options.error(resp, 'error', err.message);
-                    reject(err);
+            } else {
+                // Parse body as JSON if a string.
+                if (body && typeof body === 'string') {
+                    try {
+                        body = JSON.parse(body);
+                    } catch (err) {
+                        if (options.error) options.error(resp, 'error', err.message);
+                        reject(err);
+                    }
                 }
+                if (options.success) options.success(body, 'success', resp);
+                resolve(body);
             }
-            if (options.success) options.success(body, 'success', resp);
-            resolve(body);
         });
     });
     request.ajaxSettings = ajaxSettings;
@@ -128,13 +137,4 @@ module.exports = function (method, model, options) {
     // attach request to promise
     promise.request = request;
     return promise;
-};
-
-// Map from CRUD to HTTP for our default `Backbone.sync` implementation.
-var methodMap = {
-    'create': 'POST',
-    'update': 'PUT',
-    'patch':  'PATCH',
-    'delete': 'DELETE',
-    'read':   'GET'
 };
