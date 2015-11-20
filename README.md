@@ -1,6 +1,14 @@
 This is a forked from [ampersand-sync](https://github.com/AmpersandJS/ampersand-sync) to add the ability of using [promises](http://promisesaplus.com/).
 A [bare bones Promises/A+ implementation](https://github.com/then/promise) is used. To support browsers pre IE9, please use the [es5-shim](https://github.com/es-shims/es5-shim).
 
+[![npm version](https://badge.fury.io/js/ampersand-sync-with-promise.svg)](https://badge.fury.io/js/ampersand-sync-with-promise)
+
+## Installation
+
+```sh
+:; npm install ampersand-sync-with-promise
+```
+
 ## Main difference
 In this version, the `sync` method returns a promise instead of the request object. The `request` object is still available on the promise.
 
