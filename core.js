@@ -27,7 +27,7 @@ module.exports = function (xhr) {
   };
 
   return function (method, model, optionsInput) {
-      //Copy the options object. It's using assign instead of clonedeep as an optimization. 
+      //Copy the options object. It's using assign instead of clonedeep as an optimization.
       //The only object we could expect in options is headers, which is safely transfered below.
       var options = assign({},optionsInput);
       var type = methodMap[method];
