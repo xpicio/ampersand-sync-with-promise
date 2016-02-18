@@ -33,6 +33,8 @@ var bRequest = bModel.fetch().request;
 console.log(bRequest.ajaxSettings);
 ```
 
+In the case of an error (either an HTTP error or JSON parsing error), the full response from the server could be accessed via `err.resp`.
+
 # ampersand-sync
 
 Standalone, modern-browser-only version of Backbone.Sync as Common JS module.
