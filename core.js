@@ -132,7 +132,7 @@ module.exports = function (xhr) {
                     var message = (err? err.message : (body || "HTTP"+resp.statusCode));
                     options.error(resp, 'error', message);
                   }
-                  reject(err);
+                  reject(assign({}, err, {resp: resp}));
               } else {
                   // Parse body as JSON
                   var accept = mediaType.fromString(params.headers.accept);
@@ -142,7 +142,7 @@ module.exports = function (xhr) {
                           body = JSON.parse(body);
                       } catch (err) {
                           if (options.error) options.error(resp, 'error', err.message);
-                          return reject(err);
+                          return reject(assign({}, err, {resp: resp}));
                       }
                   }
                   if (options.success) options.success(body, 'success', resp);
