@@ -1,5 +1,4 @@
-This is a forked from [ampersand-sync](https://github.com/AmpersandJS/ampersand-sync) to add the ability of using [promises](http://promisesaplus.com/).
-A [bare bones Promises/A+ implementation](https://github.com/then/promise) is used. To support browsers pre IE9, please use the [es5-shim](https://github.com/es-shims/es5-shim).
+This is a forked from [ampersand-sync](https://github.com/AmpersandJS/ampersand-sync) to add the ability to use [JavaScript Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). [any-promise](https://github.com/kevinbeaty/any-promise) is used to allow the application to define/ swap out its [own promise implementation](https://github.com/kevinbeaty/any-promise#application-registration), such as bluebird. By default, `any-promise` will use `window.Promise`.
 
 [![npm version](https://badge.fury.io/js/ampersand-sync-with-promise.svg)](https://badge.fury.io/js/ampersand-sync-with-promise)
 
@@ -13,6 +12,11 @@ A [bare bones Promises/A+ implementation](https://github.com/then/promise) is us
 In this version, the `sync` method returns a promise instead of the request object. The `request` object is still available on the promise.
 
 ```js
+// optionally require your own promise implementation.
+// this is highly recommended if you want to support browser that does not
+// have native support for Promises.
+require('any-promise/register')('bluebird', {Promise: require('bluebird')});
+
 var syncPromise = require('ampersand-sync-with-promise');
 var AmpersandModel = require('ampersand-model');
 
