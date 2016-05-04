@@ -5,10 +5,7 @@ var includes = require('lodash.includes');
 var assign = require('lodash.assign');
 var qs = require('qs');
 var mediaType = require('media-type');
-
-// TPromise stands for then/promise, used as a way to avoid naming collision with native Promise implementation
-// at this point, this is largely to avoid jshint from complaining
-var TPromise = require('promise');
+var Promise = require('any-promise');
 
 module.exports = function (xhr) {
 
@@ -121,7 +118,7 @@ module.exports = function (xhr) {
       var request;
       // Make the request. The callback executes functions that are compatible
       // With jQuery.ajax's syntax.
-      var promise = new TPromise(function (resolve, reject) {
+      var promise = new Promise(function (resolve, reject) {
           request = options.xhrImplementation(ajaxSettings, function (err, resp, body) {
               if (err || resp.statusCode >= 400) {
 
