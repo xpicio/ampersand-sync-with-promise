@@ -4,6 +4,8 @@ This is a forked from [ampersand-sync](https://github.com/AmpersandJS/ampersand-
 
 ## Installation
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/tnguyen14/ampersand-sync-with-promise.svg)](https://greenkeeper.io/)
+
 ```sh
 :; npm install ampersand-sync-with-promise
 ```
