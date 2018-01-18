@@ -66,7 +66,7 @@ module.exports = function (xhr) {
       }
 
       // Ensure that we have the appropriate request data.
-      if (options.data == null && model && (method === 'create' || method === 'update' || method === 'patch')) {
+      if (model && (method === 'create' || method === 'update' || method === 'patch')) {
           params.json = options.attrs || model.toJSON(options);
       }
 
