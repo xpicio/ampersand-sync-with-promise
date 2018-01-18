@@ -70,8 +70,8 @@ module.exports = function (xhr) {
           params.json = options.attrs || model.toJSON(options);
       }
 
-      // If passed a data param, we add it to the URL or body depending on request type
-      if (options.data && type === 'GET') {
+      // If passed a data param, we add it to the URL.
+      if (options.data) {
           // make sure we've got a '?'
           options.url += includes(options.url, '?') ? '&' : '?';
           options.url += qs.stringify(options.data);
