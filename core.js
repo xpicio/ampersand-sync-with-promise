@@ -9,6 +9,62 @@ var Promise = require('any-promise');
 
 module.exports = function (xhr) {
 
+  function parseLinkHeader(link) {
+    if (link === '' || typeof link === 'undefined') {
+      return {};
+    } else {
+      let hasNext = false;
+      let hasPrev = false;
+      let next = null;
+      let prev = null;
+      let linkValues = link.split(',');
+
+      linkValues.forEach(function (linkValue) {
+        let linkParam = linkValue.split(';').length > 0 ?
+          linkValue.split(';')[1] : '';
+
+        if (linkParam.match(/rel="next"/gi)) {
+          let page = 1;
+
+          // check if page parameter exist
+          if (linkValue.match(/page=(\d+)/gi)) {
+            page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
+          }
+
+          hasNext = true;
+          next = {
+            url: linkValue.match(/<(.*?)>/gi)[0],
+            page: page
+          };
+        }
+
+        if (linkParam.match(/rel="prev"/gi)) {
+          let page = 1;
+
+          // check if page parameter exist
+          if (linkValue.match(/page=(\d+)/gi)) {
+            page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
+          }
+
+          hasPrev = true;
+          prev = {
+            url: linkValue.match(/<(.*?)>/gi)[0],
+            page: page
+          };
+        }
+      });
+
+      let paginator = {
+        hasNext: hasNext,
+        hasPrev: hasPrev,
+        next: next,
+        prev: prev
+      };
+
+      return paginator;
+    }
+  }
+
   // Throw an error when a URL is needed, and none is supplied.
   var urlError = function () {
       throw new Error('A "url" property or function must be specified');
@@ -120,6 +176,10 @@ module.exports = function (xhr) {
       // With jQuery.ajax's syntax.
       var promise = new Promise(function (resolve, reject) {
           request = options.xhrImplementation(ajaxSettings, function (err, resp, body) {
+              // Patch response with paginator object
+              var paginator = parseLinkHeader(resp.headers.link);
+              resp.paginator = paginator;
+
               if (err || resp.statusCode >= 400) {
 
                   if (options.error) {
