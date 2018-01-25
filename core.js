@@ -13,55 +13,53 @@ module.exports = function (xhr) {
     if (link === '' || typeof link === 'undefined') {
       return {};
     } else {
-      let hasNext = false;
-      let hasPrev = false;
-      let next = null;
-      let prev = null;
-      let linkValues = link.split(',');
+      var hasNext = false;
+      var hasPrev = false;
+      var next = null;
+      var prev = null;
+      var linkValues = link.split(',');
 
       linkValues.forEach(function (linkValue) {
-        let linkParam = linkValue.split(';').length > 0 ?
+        var linkParam = linkValue.split(';').length > 0 ?
           linkValue.split(';')[1] : '';
 
         if (linkParam.match(/rel="next"/gi)) {
-          let page = 1;
+          var pageNext = 1;
 
           // check if page parameter exist
           if (linkValue.match(/page=(\d+)/gi)) {
-            page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
+            pageNext = linkValue.replace(/.*page=(\d+).*/gi, '$1');
           }
 
           hasNext = true;
           next = {
             url: linkValue.match(/<(.*?)>/gi)[0],
-            page: page
+            page: pageNext
           };
         }
 
         if (linkParam.match(/rel="prev"/gi)) {
-          let page = 1;
+          var pagePrev = 1;
 
           // check if page parameter exist
           if (linkValue.match(/page=(\d+)/gi)) {
-            page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
+            pagePrev = linkValue.replace(/.*page=(\d+).*/gi, '$1');
           }
 
           hasPrev = true;
           prev = {
             url: linkValue.match(/<(.*?)>/gi)[0],
-            page: page
+            page: pagePrev
           };
         }
       });
 
-      let paginator = {
+      return {
         hasNext: hasNext,
         hasPrev: hasPrev,
         next: next,
         prev: prev
       };
-
-      return paginator;
     }
   }
 
