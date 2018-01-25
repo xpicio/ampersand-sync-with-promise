@@ -176,9 +176,9 @@ module.exports = function (xhr) {
       // With jQuery.ajax's syntax.
       var promise = new Promise(function (resolve, reject) {
           request = options.xhrImplementation(ajaxSettings, function (err, resp, body) {
-              // Patch response with paginator object
+              // Patch model with paginator object
               var paginator = parseLinkHeader(resp.headers.link);
-              resp.paginator = paginator;
+              model.paginator = paginator;
 
               if (err || resp.statusCode >= 400) {
 
